@@ -1,5 +1,5 @@
 /* @flow */
-
+//
 import config from 'core/config'
 import { warn, cached } from 'core/util/index'
 import { mark, measure } from 'core/util/perf'
@@ -35,7 +35,7 @@ Vue.prototype.$mount = function(
   // 因为在对象上，这里的this指向Vue.prototype
   const options = this.$options
   // resolve template/el and convert to render function
-  // 假如不是render函数的话，是template,转成render函数，这块都是处理template转成render函数
+  // 假如不是render函数的话，是template,转成render函数，这块都是处理template转成render函数(可能是因为compile方式的原因)
   if (!options.render) {
     let template = options.template
     if (template) {
@@ -66,7 +66,7 @@ Vue.prototype.$mount = function(
       if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
         mark('compile')
       }
-
+      // 这边应该是生成render函数
       const { render, staticRenderFns } = compileToFunctions(
         template,
         {
@@ -78,6 +78,7 @@ Vue.prototype.$mount = function(
         },
         this
       )
+      // 这边给Vue.prototype.$options赋值属性(准确的说是生成的对象)
       options.render = render
       options.staticRenderFns = staticRenderFns
 
@@ -88,6 +89,7 @@ Vue.prototype.$mount = function(
       }
     }
   }
+  // call这个this对象，指的的是new 生成的实例
   return mount.call(this, el, hydrating)
 }
 
