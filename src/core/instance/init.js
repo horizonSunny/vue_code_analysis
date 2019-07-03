@@ -12,8 +12,8 @@ import { extend, mergeOptions, formatComponentName } from '../util/index'
 
 let uid = 0
 
-export function initMixin (Vue: Class<Component>) {
-  Vue.prototype._init = function (options?: Object) {
+export function initMixin(Vue: Class<Component>) {
+  Vue.prototype._init = function(options?: Object) {
     const vm: Component = this
     // a uid
     vm._uid = uid++
@@ -29,8 +29,9 @@ export function initMixin (Vue: Class<Component>) {
     // a flag to avoid this being observed
     vm._isVue = true
     // merge options
+    // 这一步应该是合并配置选项，一个是工程代码中设置的options,constructor目前的指向尚不明确
     if (options && options._isComponent) {
-      // optimize internal component instantiation
+      // optimize internal component instantiation  内部组件优化实例化
       // since dynamic options merging is pretty slow, and none of the
       // internal component options needs special treatment.
       initInternalComponent(vm, options)
@@ -42,12 +43,14 @@ export function initMixin (Vue: Class<Component>) {
       )
     }
     /* istanbul ignore else */
+    // 设置一层render函数的代理
     if (process.env.NODE_ENV !== 'production') {
       initProxy(vm)
     } else {
       vm._renderProxy = vm
     }
     // expose real self
+    // 初始化生命周期，初始化事件中心，初始化渲染，初始化data，props，computed，watcher等等
     vm._self = vm
     initLifecycle(vm)
     initEvents(vm)
@@ -64,15 +67,19 @@ export function initMixin (Vue: Class<Component>) {
       mark(endTag)
       measure(`vue ${vm._name} init`, startTag, endTag)
     }
-
+    // 在初始化的最后，检测到如果有el属性，则调用vm.$mount方法挂在vm，挂载的目标就是把模板最终渲染成dom
     if (vm.$options.el) {
       vm.$mount(vm.$options.el)
     }
   }
 }
 
-export function initInternalComponent (vm: Component, options: InternalComponentOptions) {
-  const opts = vm.$options = Object.create(vm.constructor.options)
+export function initInternalComponent(
+  vm: Component,
+  options: InternalComponentOptions
+) {
+  // 这里暂定opts和vm.$options指向是同一个对象，所以操作opts就相当于操作vm.$options
+  const opts = (vm.$options = Object.create(vm.constructor.options))
   // doing this because it's faster than dynamic enumeration.
   const parentVnode = options._parentVnode
   opts.parent = options.parent
@@ -90,7 +97,7 @@ export function initInternalComponent (vm: Component, options: InternalComponent
   }
 }
 
-export function resolveConstructorOptions (Ctor: Class<Component>) {
+export function resolveConstructorOptions(Ctor: Class<Component>) {
   let options = Ctor.options
   if (Ctor.super) {
     const superOptions = resolveConstructorOptions(Ctor.super)
@@ -114,7 +121,7 @@ export function resolveConstructorOptions (Ctor: Class<Component>) {
   return options
 }
 
-function resolveModifiedOptions (Ctor: Class<Component>): ?Object {
+function resolveModifiedOptions(Ctor: Class<Component>): ?Object {
   let modified
   const latest = Ctor.options
   const sealed = Ctor.sealedOptions

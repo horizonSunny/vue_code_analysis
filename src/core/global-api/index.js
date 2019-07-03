@@ -9,7 +9,7 @@ import { set, del } from '../observer/index'
 import { ASSET_TYPES } from 'shared/constants'
 import builtInComponents from '../components/index'
 import { observe } from 'core/observer/index'
-
+// vue在整个初始化过程中，除了给它原型prototype上扩展方法，还会给Vue这个对象本身扩展全局静态方法
 import {
   warn,
   extend,
@@ -17,8 +17,8 @@ import {
   mergeOptions,
   defineReactive
 } from '../util/index'
-
-export function initGlobalAPI (Vue: GlobalAPI) {
+// 定义一系列全局静态方法
+export function initGlobalAPI(Vue: GlobalAPI) {
   // config
   const configDef = {}
   configDef.get = () => config
@@ -62,6 +62,7 @@ export function initGlobalAPI (Vue: GlobalAPI) {
 
   extend(Vue.options.components, builtInComponents)
 
+  // 定义了一些全局的静态方法
   initUse(Vue)
   initMixin(Vue)
   initExtend(Vue)
