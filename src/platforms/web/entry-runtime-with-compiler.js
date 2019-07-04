@@ -33,6 +33,7 @@ Vue.prototype.$mount = function(
     return this
   }
   // 因为在对象上，这里的this指向Vue.prototype,看new app上option配置中有没有render函数
+  // 这里的$options是在Vue对象创建的时候合并options配置项拿到的
   const options = this.$options
   // resolve template/el and convert to render function
   // 假如不是render函数的话，是template,转成render函数，这块都是处理template转成render函数(可能是因为compile方式的原因)
@@ -69,6 +70,7 @@ Vue.prototype.$mount = function(
         //标记 编译
         mark('compile')
       }
+      // 上面是找到template模版
       // 这边应该依据找到的template生成render函数，es6解构赋值,这下面是编译的函数
       const { render, staticRenderFns } = compileToFunctions(
         template,
@@ -81,7 +83,7 @@ Vue.prototype.$mount = function(
         },
         this
       )
-      // 这边给Vue.prototype.$options赋值属性(准确的说是生成的对象)，给Vue对象对options赋值
+      // 这边给Vue.prototype.$options赋值属性(准确的说是生成的对象)
       options.render = render
       options.staticRenderFns = staticRenderFns
 

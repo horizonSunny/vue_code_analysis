@@ -1,35 +1,36 @@
 /* @flow */
-
+// 在Vue.js中，virtualDom是用vnode这么一个class去描述的，其实现是借鉴类一个开源库snabbdom的实现
+// vnode只是用来映射到真实的DOM渲染，不需要包含操作DOM的方法，因此是非常轻量和简单的
 export default class VNode {
-  tag: string | void;
-  data: VNodeData | void;
-  children: ?Array<VNode>;
-  text: string | void;
-  elm: Node | void;
-  ns: string | void;
-  context: Component | void; // rendered in this component's scope
-  key: string | number | void;
-  componentOptions: VNodeComponentOptions | void;
-  componentInstance: Component | void; // component instance
-  parent: VNode | void; // component placeholder node
+  tag: string | void
+  data: VNodeData | void
+  children: ?Array<VNode>
+  text: string | void
+  elm: Node | void
+  ns: string | void
+  context: Component | void // rendered in this component's scope
+  key: string | number | void
+  componentOptions: VNodeComponentOptions | void
+  componentInstance: Component | void // component instance
+  parent: VNode | void // component placeholder node
 
   // strictly internal
-  raw: boolean; // contains raw HTML? (server only)
-  isStatic: boolean; // hoisted static node
-  isRootInsert: boolean; // necessary for enter transition check
-  isComment: boolean; // empty comment placeholder?
-  isCloned: boolean; // is a cloned node?
-  isOnce: boolean; // is a v-once node?
-  asyncFactory: Function | void; // async component factory function
-  asyncMeta: Object | void;
-  isAsyncPlaceholder: boolean;
-  ssrContext: Object | void;
-  fnContext: Component | void; // real context vm for functional nodes
-  fnOptions: ?ComponentOptions; // for SSR caching
-  devtoolsMeta: ?Object; // used to store functional render context for devtools
-  fnScopeId: ?string; // functional scope id support
+  raw: boolean // contains raw HTML? (server only)
+  isStatic: boolean // hoisted static node
+  isRootInsert: boolean // necessary for enter transition check
+  isComment: boolean // empty comment placeholder?
+  isCloned: boolean // is a cloned node?
+  isOnce: boolean // is a v-once node?
+  asyncFactory: Function | void // async component factory function
+  asyncMeta: Object | void
+  isAsyncPlaceholder: boolean
+  ssrContext: Object | void
+  fnContext: Component | void // real context vm for functional nodes
+  fnOptions: ?ComponentOptions // for SSR caching
+  devtoolsMeta: ?Object // used to store functional render context for devtools
+  fnScopeId: ?string // functional scope id support
 
-  constructor (
+  constructor(
     tag?: string,
     data?: VNodeData,
     children?: ?Array<VNode>,
@@ -66,7 +67,7 @@ export default class VNode {
 
   // DEPRECATED: alias for componentInstance for backwards compat.
   /* istanbul ignore next */
-  get child (): Component | void {
+  get child(): Component | void {
     return this.componentInstance
   }
 }
@@ -78,7 +79,7 @@ export const createEmptyVNode = (text: string = '') => {
   return node
 }
 
-export function createTextVNode (val: string | number) {
+export function createTextVNode(val: string | number) {
   return new VNode(undefined, undefined, undefined, String(val))
 }
 
@@ -86,7 +87,7 @@ export function createTextVNode (val: string | number) {
 // used for static nodes and slot nodes because they may be reused across
 // multiple renders, cloning them avoids errors when DOM manipulations rely
 // on their elm reference.
-export function cloneVNode (vnode: VNode): VNode {
+export function cloneVNode(vnode: VNode): VNode {
   const cloned = new VNode(
     vnode.tag,
     vnode.data,

@@ -173,7 +173,8 @@ export function mountComponent(
   }
   // 这块是挂在生命周期函数，后面看
   callHook(vm, 'beforeMount')
-
+  // update中会调用vm._render方法先生成虚拟node，最终调用vm._update更新dom
+  // 而这部分这个函数的调用是在new watch中，把updateComponent当成Watch实例的回掉
   let updateComponent
   /* istanbul ignore if */
   if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
@@ -184,6 +185,7 @@ export function mountComponent(
       const endTag = `vue-perf-end:${id}`
 
       mark(startTag)
+      // 定义的一个render方法
       const vnode = vm._render()
       mark(endTag)
       measure(`vue ${name} render`, startTag, endTag)
@@ -202,6 +204,8 @@ export function mountComponent(
   // we set this to vm._watcher inside the watcher's constructor
   // since the watcher's initial patch may call $forceUpdate (e.g. inside child
   // component's mounted hook), which relies on vm._watcher being already defined
+  // Watcher 在这里起了两个作用，一个是初始化的时候会执行回掉函数，另一个是当vm实例中的检测的数据变化
+  // 的时候会执行回掉函数， 后续在看new watcher
   new Watcher(
     vm,
     updateComponent,
