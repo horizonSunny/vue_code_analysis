@@ -22,6 +22,7 @@ Vue.prototype.$mount = function(
   el?: string | Element,
   hydrating?: boolean
 ): Component {
+  // 找到dom节点
   el = el && query(el)
 
   /* istanbul ignore if */
@@ -95,6 +96,7 @@ Vue.prototype.$mount = function(
     }
   }
   // call这个this对象，指的的是new 生成的实例
+  // 这块就走回刚才缓存的 const mount = Vue.prototype.$mount
   return mount.call(this, el, hydrating)
 }
 

@@ -57,6 +57,7 @@ export function initLifecycle(vm: Component) {
 
 export function lifecycleMixin(Vue: Class<Component>) {
   mountComponent
+  // _update是实例的一个私有方法，它被调用的时机有两个，一个是首次渲染，一个是数据更新的时候
   Vue.prototype._update = function(vnode: VNode, hydrating?: boolean) {
     const vm: Component = this
     const prevEl = vm.$el
@@ -65,6 +66,7 @@ export function lifecycleMixin(Vue: Class<Component>) {
     vm._vnode = vnode
     // Vue.prototype.__patch__ is injected in entry points
     // based on the rendering backend used.
+    // update的核心就是调用vm._patch_方法
     if (!prevVnode) {
       // initial render
       vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)
@@ -146,7 +148,7 @@ export function mountComponent(
 ): Component {
   // el是获取el的模版
   vm.$el = el
-  // 这是假如options配置项上没有render函数
+  // 这是假如options配置项上没有render函数，由于没正确生成render函数而报错
   if (!vm.$options.render) {
     // 首先先定义一个初始化的render函数
     vm.$options.render = createEmptyVNode
@@ -197,6 +199,7 @@ export function mountComponent(
     }
   } else {
     updateComponent = () => {
+      //  vm._render()  渲染出来一个vnode
       vm._update(vm._render(), hydrating)
     }
   }
@@ -206,6 +209,7 @@ export function mountComponent(
   // component's mounted hook), which relies on vm._watcher being already defined
   // Watcher 在这里起了两个作用，一个是初始化的时候会执行回掉函数，另一个是当vm实例中的检测的数据变化
   // 的时候会执行回掉函数， 后续在看new watcher
+  // 观察者模式
   new Watcher(
     vm,
     updateComponent,

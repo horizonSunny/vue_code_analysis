@@ -7,6 +7,7 @@ import { warn } from '../util/index'
 // 这里是真正初始化Vue的地方
 // 这边初始化的时候调用this._init，定义了一个类，到时候谁new init，
 // this就指向谁，这个init方法是通过initMixin函数定义到prototype上的
+// 这个options就是new Vue 传入的options
 function Vue(options) {
   if (process.env.NODE_ENV !== 'production' && !(this instanceof Vue)) {
     warn('Vue is a constructor and should be called with the `new` keyword')

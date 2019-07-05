@@ -115,6 +115,7 @@ export function renderMixin(Vue: Class<Component>) {
       // 这里是最关键的一句，生成vnode代码，这里的vm.$createElement就是手写的render函数中的createElement
       // 实际上，vm.$createElement方法定义在执行initRender方法的时候
       // vm._render最终是通过执行createElement方法并返回是vnode，它是一个虚拟Node
+      // call第一个参数是当前上下文
       vnode = render.call(vm._renderProxy, vm.$createElement)
     } catch (e) {
       handleError(e, vm, `render`)
