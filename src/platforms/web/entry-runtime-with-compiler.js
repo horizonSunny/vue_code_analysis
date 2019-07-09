@@ -73,6 +73,7 @@ Vue.prototype.$mount = function(
       }
       // 上面是找到template模版
       // 这边应该依据找到的template生成render函数，es6解构赋值,这下面是编译的函数
+      // 这便是形成render函数
       const { render, staticRenderFns } = compileToFunctions(
         template,
         {

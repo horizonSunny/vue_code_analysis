@@ -5,13 +5,7 @@ import { resolveConstructorOptions } from 'core/instance/init'
 import { queueActivatedComponent } from 'core/observer/scheduler'
 import { createFunctionalComponent } from './create-functional-component'
 
-import {
-  warn,
-  isDef,
-  isUndef,
-  isTrue,
-  isObject
-} from '../util/index'
+import { warn, isDef, isUndef, isTrue, isObject } from '../util/index'
 
 import {
   resolveAsyncComponent,
@@ -34,7 +28,7 @@ import {
 
 // inline hooks to be invoked on component VNodes during patch
 const componentVNodeHooks = {
-  init (vnode: VNodeWithData, hydrating: boolean): ?boolean {
+  init(vnode: VNodeWithData, hydrating: boolean): ?boolean {
     if (
       vnode.componentInstance &&
       !vnode.componentInstance._isDestroyed &&
@@ -44,17 +38,17 @@ const componentVNodeHooks = {
       const mountedNode: any = vnode // work around flow
       componentVNodeHooks.prepatch(mountedNode, mountedNode)
     } else {
-      const child = vnode.componentInstance = createComponentInstanceForVnode(
+      const child = (vnode.componentInstance = createComponentInstanceForVnode(
         vnode,
         activeInstance
-      )
+      ))
       child.$mount(hydrating ? vnode.elm : undefined, hydrating)
     }
   },
 
-  prepatch (oldVnode: MountedComponentVNode, vnode: MountedComponentVNode) {
+  prepatch(oldVnode: MountedComponentVNode, vnode: MountedComponentVNode) {
     const options = vnode.componentOptions
-    const child = vnode.componentInstance = oldVnode.componentInstance
+    const child = (vnode.componentInstance = oldVnode.componentInstance)
     updateChildComponent(
       child,
       options.propsData, // updated props
@@ -64,7 +58,7 @@ const componentVNodeHooks = {
     )
   },
 
-  insert (vnode: MountedComponentVNode) {
+  insert(vnode: MountedComponentVNode) {
     const { context, componentInstance } = vnode
     if (!componentInstance._isMounted) {
       componentInstance._isMounted = true
@@ -84,7 +78,7 @@ const componentVNodeHooks = {
     }
   },
 
-  destroy (vnode: MountedComponentVNode) {
+  destroy(vnode: MountedComponentVNode) {
     const { componentInstance } = vnode
     if (!componentInstance._isDestroyed) {
       if (!vnode.data.keepAlive) {
@@ -98,7 +92,7 @@ const componentVNodeHooks = {
 
 const hooksToMerge = Object.keys(componentVNodeHooks)
 
-export function createComponent (
+export function createComponent(
   Ctor: Class<Component> | Function | Object | void,
   data: ?VNodeData,
   context: Component,
@@ -108,10 +102,11 @@ export function createComponent (
   if (isUndef(Ctor)) {
     return
   }
-
+  // initGLobalApi Vue.options._base = Vue ,然后通过merageOptions合并到vm.$options
   const baseCtor = context.$options._base
 
   // plain options object: turn it into a constructor
+  // 构造子类构造函数
   if (isObject(Ctor)) {
     Ctor = baseCtor.extend(Ctor)
   }
@@ -134,13 +129,7 @@ export function createComponent (
       // return a placeholder node for async component, which is rendered
       // as a comment node but preserves all the raw information for the node.
       // the information will be used for async server-rendering and hydration.
-      return createAsyncPlaceholder(
-        asyncFactory,
-        data,
-        context,
-        children,
-        tag
-      )
+      return createAsyncPlaceholder(asyncFactory, data, context, children, tag)
     }
   }
 
@@ -183,13 +172,18 @@ export function createComponent (
   }
 
   // install component management hooks onto the placeholder node
+  // 依据开源库snabbdom安装依赖钩子
   installComponentHooks(data)
 
   // return a placeholder vnode
   const name = Ctor.options.name || tag
   const vnode = new VNode(
     `vue-component-${Ctor.cid}${name ? `-${name}` : ''}`,
-    data, undefined, undefined, undefined, context,
+    data,
+    undefined,
+    undefined,
+    undefined,
+    context,
     { Ctor, propsData, listeners, tag, children },
     asyncFactory
   )
@@ -205,9 +199,9 @@ export function createComponent (
   return vnode
 }
 
-export function createComponentInstanceForVnode (
+export function createComponentInstanceForVnode(
   vnode: any, // we know it's MountedComponentVNode but flow doesn't
-  parent: any, // activeInstance in lifecycle state
+  parent: any // activeInstance in lifecycle state
 ): Component {
   const options: InternalComponentOptions = {
     _isComponent: true,
@@ -223,7 +217,7 @@ export function createComponentInstanceForVnode (
   return new vnode.componentOptions.Ctor(options)
 }
 
-function installComponentHooks (data: VNodeData) {
+function installComponentHooks(data: VNodeData) {
   const hooks = data.hook || (data.hook = {})
   for (let i = 0; i < hooksToMerge.length; i++) {
     const key = hooksToMerge[i]
@@ -235,7 +229,7 @@ function installComponentHooks (data: VNodeData) {
   }
 }
 
-function mergeHook (f1: any, f2: any): Function {
+function mergeHook(f1: any, f2: any): Function {
   const merged = (a, b) => {
     // flow complains about extra args which is why we use any
     f1(a, b)
@@ -247,7 +241,7 @@ function mergeHook (f1: any, f2: any): Function {
 
 // transform component v-model info (value and callback) into
 // prop and event handler respectively.
-function transformModel (options, data: any) {
+function transformModel(options, data: any) {
   const prop = (options.model && options.model.prop) || 'value'
   const event = (options.model && options.model.event) || 'input'
   ;(data.attrs || (data.attrs = {}))[prop] = data.model.value
