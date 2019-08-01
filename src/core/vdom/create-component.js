@@ -172,7 +172,7 @@ export function createComponent(
   }
 
   // install component management hooks onto the placeholder node
-  // 依据开源库snabbdom安装依赖钩子
+  // 依据开源库snabbdom安装依赖钩子函数
   installComponentHooks(data)
 
   // return a placeholder vnode

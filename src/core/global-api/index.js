@@ -19,7 +19,7 @@ import {
 } from '../util/index'
 // 定义一系列全局静态方法
 export function initGlobalAPI(Vue: GlobalAPI) {
-  // config
+  // config 这边是定义config属性，初始化config
   const configDef = {}
   configDef.get = () => config
   if (process.env.NODE_ENV !== 'production') {

@@ -13,6 +13,7 @@ import {
 } from './util/compat'
 
 const idToTemplate = cached(id => {
+  // 查找id值的el元素
   const el = query(id)
   return el && el.innerHTML
 })

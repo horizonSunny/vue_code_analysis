@@ -20,7 +20,7 @@ import platformDirectives from './directives/index'
 import platformComponents from './components/index'
 
 // install platform specific utils
-// 定义静态方法
+// 定义静态方法，定义一系列的静态方法
 Vue.config.mustUseProp = mustUseProp
 Vue.config.isReservedTag = isReservedTag
 Vue.config.isReservedAttr = isReservedAttr
@@ -28,6 +28,7 @@ Vue.config.getTagNamespace = getTagNamespace
 Vue.config.isUnknownElement = isUnknownElement
 
 // install platform runtime directives & components
+// 这边是给Vue.options.directives和components赋值
 extend(Vue.options.directives, platformDirectives)
 extend(Vue.options.components, platformComponents)
 

@@ -15,6 +15,7 @@ function Vue(options) {
   this._init(options)
 }
 // 在Vue原型上挂载了一系列方法
+// initMixin 混入了Vue的prototype等对象 其中init方法也是在其中
 initMixin(Vue)
 stateMixin(Vue)
 eventsMixin(Vue)
