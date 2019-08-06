@@ -47,7 +47,7 @@ export function _createElement(
   context: Component,
   tag?: string | Class<Component> | Function | Object,
   data?: VNodeData,
-  children?: any,
+  children?: any, // 子节点是任意类型
   normalizationType?: number
 ): VNode | Array<VNode> {
   // 这边是进行判断
@@ -94,10 +94,11 @@ export function _createElement(
   if (normalizationType === ALWAYS_NORMALIZE) {
     children = normalizeChildren(children)
   } else if (normalizationType === SIMPLE_NORMALIZE) {
+    // 该方法调用场景是render函数编译生成的
     children = simpleNormalizeChildren(children)
   }
   // 经过对children的规范化，children变成了一个类型为VNode的Array
-  // 这边是定义vnode
+  // 规范化children后，这边是定义vnode
   let vnode, ns
   if (typeof tag === 'string') {
     let Ctor
@@ -135,6 +136,7 @@ export function _createElement(
       vnode = new VNode(tag, data, children, undefined, undefined, context)
     }
   } else {
+    // 这边是组件生成的vnode
     // direct component options / constructor
     vnode = createComponent(tag, data, context, children)
   }

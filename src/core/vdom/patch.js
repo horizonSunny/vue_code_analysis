@@ -117,7 +117,7 @@ export function createPatchFunction(backend) {
   }
 
   let creatingElmInVPre = 0
-
+  // 作用是通过虚拟节点创建真实的dom并插入它的父节点中
   function createElm(
     vnode,
     insertedVnodeQueue,

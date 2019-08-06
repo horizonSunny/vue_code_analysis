@@ -1,6 +1,9 @@
 /* @flow */
 // 在Vue.js中，virtualDom是用vnode这么一个class去描述的，其实现是借鉴类一个开源库snabbdom的实现
 // vnode只是用来映射到真实的DOM渲染，不需要包含操作DOM的方法，因此是非常轻量和简单的
+// vnode其实是对真实的dom的一种抽象
+// virtualDom 除了它的数据结构定义，映射到真实到Dom实际上要经历vnode到create diff  patch 等过程
+// vnode等create 是通过之前提到等createElement方法创建
 export default class VNode {
   tag: string | void
   data: VNodeData | void

@@ -15,7 +15,7 @@ let uid = 0
 export function initMixin(Vue: Class<Component>) {
   Vue.prototype._init = function(options?: Object) {
     const vm: Component = this
-    // a uid
+    // a uid vm 实例等唯一标识
     vm._uid = uid++
 
     let startTag, endTag
@@ -30,12 +30,14 @@ export function initMixin(Vue: Class<Component>) {
     vm._isVue = true
     // merge options
     // 这一步应该是合并配置选项，一个是工程代码中设置的options,constructor目前的指向尚不明确
+    // _iscomponent 是内部创建子组件时才会添加为true的属性（也就是除了根组件之外，所有的子组件？）
     if (options && options._isComponent) {
       // optimize internal component instantiation  内部组件优化实例化
       // since dynamic options merging is pretty slow, and none of the
       // internal component options needs special treatment.
-      initInternalComponent(vm, options)
+      initInternalComponent(vm, options) // 初始化内部组件
     } else {
+      // 方法，合并构造器父级上定义的options
       vm.$options = mergeOptions(
         resolveConstructorOptions(vm.constructor),
         options || {},

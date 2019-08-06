@@ -34,6 +34,7 @@ extend(Vue.options.components, platformComponents)
 
 // install platform patch function
 // 假如是浏览器环境话就给vue原型上添加属性patch
+// 这边就是_patch_ 方法，作用是在update时候用
 Vue.prototype.__patch__ = inBrowser ? patch : noop
 
 // public mount method
@@ -42,6 +43,7 @@ Vue.prototype.$mount = function(
   el?: string | Element,
   hydrating?: boolean
 ): Component {
+  // el表示挂载的元素，可以是字符串，也可以是dom对象，第二个参数是和服务端渲染相关的
   el = el && inBrowser ? query(el) : undefined
   return mountComponent(this, el, hydrating)
 }

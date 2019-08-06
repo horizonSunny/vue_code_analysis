@@ -34,8 +34,9 @@ const sharedPropertyDefinition = {
   get: noop,
   set: noop
 }
-
+// target是vm,sourceKey,类似于_props，把data和props中的属性代理到vm实例上
 export function proxy(target: Object, sourceKey: string, key: string) {
+  // 这里代理get,set方法
   sharedPropertyDefinition.get = function proxyGetter() {
     return this[sourceKey][key]
   }
@@ -46,8 +47,11 @@ export function proxy(target: Object, sourceKey: string, key: string) {
 }
 
 export function initState(vm: Component) {
+  // 该方法主要是对props，methods,data,computed和watcher等属性做了初始化操作
+  // watchers观测者是在vm实例上
   vm._watchers = []
   const opts = vm.$options
+  // 初始化props，methods，data,computed,watch
   if (opts.props) initProps(vm, opts.props)
   if (opts.methods) initMethods(vm, opts.methods)
   if (opts.data) {
@@ -60,6 +64,12 @@ export function initState(vm: Component) {
     initWatch(vm, opts.watch)
   }
 }
+/**
+ *    props的初始化主要过程，就是遍历定义的props配置。遍历的过程主要做两件事情，一个是调用
+ * defineReactive方法把每个prop对应的值变成响应式.
+ * 另一个是通过proxy把vm._props.xxx的访问代理到vm.xxx
+ *
+ * */
 
 function initProps(vm: Component, propsOptions: Object) {
   const propsData = vm.$options.propsData || {}
@@ -72,6 +82,7 @@ function initProps(vm: Component, propsOptions: Object) {
   if (!isRoot) {
     toggleObserving(false)
   }
+  // propsOptions 就是 vm.$options.props
   for (const key in propsOptions) {
     keys.push(key)
     const value = validateProp(key, propsOptions, propsData, vm)
@@ -110,9 +121,15 @@ function initProps(vm: Component, propsOptions: Object) {
   }
   toggleObserving(true)
 }
-
+/**
+ *    data的初始化也主要做了两件事，一个是对定义data函数返回对象遍历，通过proxy把一个
+ * 值vm._data.xxx都代理到vm.xxx; 另一个是调用observe方法观测整个data的变化，把data
+ * 也变成响应式
+ *
+ * */
 function initData(vm: Component) {
   let data = vm.$options.data
+  // 这里是获取data的属性，如果是function 就调用getData
   data = vm._data = typeof data === 'function' ? getData(data, vm) : data || {}
   if (!isPlainObject(data)) {
     data = {}
@@ -128,7 +145,7 @@ function initData(vm: Component) {
   const props = vm.$options.props
   const methods = vm.$options.methods
   let i = keys.length
-  // 这边进行了判断，如果data中有，那么method和props中就不能有
+  // 这边进行了判断，如果data中有，那么method,就不能有,props中有，data中不能有
   while (i--) {
     const key = keys[i]
     if (process.env.NODE_ENV !== 'production') {
@@ -149,7 +166,8 @@ function initData(vm: Component) {
     }
   }
   // observe data
-  // 这一块对data做了一个响应式处理
+  // 这一块对data做了一个响应式处理，observe的功能就是用来检测数据的变化
+  // 其中data是vm上的数据属性
   observe(data, true /* asRootData */)
 }
 

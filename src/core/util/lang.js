@@ -10,15 +10,16 @@ export const unicodeRegExp = /a-zA-Z\u00B7\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u037
 /**
  * Check if a string starts with $ or _
  */
-export function isReserved (str: string): boolean {
+export function isReserved(str: string): boolean {
   const c = (str + '').charCodeAt(0)
-  return c === 0x24 || c === 0x5F
+  return c === 0x24 || c === 0x5f
 }
 
 /**
  * Define a property.
  */
-export function def (obj: Object, key: string, val: any, enumerable?: boolean) {
+//def(value, '__ob__', this) value是实例的data属性，this指向实例
+export function def(obj: Object, key: string, val: any, enumerable?: boolean) {
   Object.defineProperty(obj, key, {
     value: val,
     enumerable: !!enumerable,
@@ -31,12 +32,12 @@ export function def (obj: Object, key: string, val: any, enumerable?: boolean) {
  * Parse simple path.
  */
 const bailRE = new RegExp(`[^${unicodeRegExp.source}.$_\\d]`)
-export function parsePath (path: string): any {
+export function parsePath(path: string): any {
   if (bailRE.test(path)) {
     return
   }
   const segments = path.split('.')
-  return function (obj) {
+  return function(obj) {
     for (let i = 0; i < segments.length; i++) {
       if (!obj) return
       obj = obj[segments[i]]

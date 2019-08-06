@@ -5076,6 +5076,7 @@
   stateMixin(Vue);
   eventsMixin(Vue);
   lifecycleMixin(Vue);
+  // 这边给实例渲染成虚拟node
   renderMixin(Vue);
 
   /*  */

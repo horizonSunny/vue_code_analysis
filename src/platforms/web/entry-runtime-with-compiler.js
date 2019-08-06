@@ -17,7 +17,8 @@ const idToTemplate = cached(id => {
   const el = query(id)
   return el && el.innerHTML
 })
-
+// 这边进行缓存，首先Vue.prototype.$mount是一个对象(函数也是对象)，所以有个指针指向该对象
+// mount 也指向该对象，后面Vue.prototype.$mount重新指向另一个对象
 const mount = Vue.prototype.$mount
 Vue.prototype.$mount = function(
   el?: string | Element,

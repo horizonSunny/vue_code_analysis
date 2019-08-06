@@ -61,6 +61,7 @@ export function lifecycleMixin(Vue: Class<Component>) {
   Vue.prototype._update = function(vnode: VNode, hydrating?: boolean) {
     const vm: Component = this
     const prevEl = vm.$el
+    // 这边取得vm._vnode,进行上一次的vnode的缓存
     const prevVnode = vm._vnode
     const restoreActiveInstance = setActiveInstance(vm)
     vm._vnode = vnode
@@ -69,9 +70,11 @@ export function lifecycleMixin(Vue: Class<Component>) {
     // update的核心就是调用vm._patch_方法
     if (!prevVnode) {
       // initial render
+      // 没有上一次的vnode的时候就初始化，建立一个vnode
       vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)
     } else {
       // updates
+      // vm._patch_是核心方法，有的化比较上次和这一次传入的vnode
       vm.$el = vm.__patch__(prevVnode, vnode)
     }
     restoreActiveInstance()
@@ -146,7 +149,7 @@ export function mountComponent(
   el: ?Element,
   hydrating?: boolean
 ): Component {
-  // el是获取el的模版
+  // el是获取el的模版，vm传的是this实例化对象
   vm.$el = el
   // 这是假如options配置项上没有render函数，由于没正确生成render函数而报错
   if (!vm.$options.render) {
@@ -227,6 +230,7 @@ export function mountComponent(
 
   // manually mounted instance, call mounted on self
   // mounted is called for render-created child components in its inserted hook
+  // vm._usMounted为true，表示这个实例已经挂载，同时执行mounted钩子函数
   if (vm.$vnode == null) {
     vm._isMounted = true
     callHook(vm, 'mounted')

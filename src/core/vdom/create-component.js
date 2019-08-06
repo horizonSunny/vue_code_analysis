@@ -90,6 +90,7 @@ const componentVNodeHooks = {
   }
 }
 
+// 取得componentVNodeHooks对象定义的钩子函数
 const hooksToMerge = Object.keys(componentVNodeHooks)
 
 export function createComponent(
@@ -103,6 +104,8 @@ export function createComponent(
     return
   }
   // initGLobalApi Vue.options._base = Vue ,然后通过merageOptions合并到vm.$options
+  // 也就是说我们能通过vm.$options._base拿到Vue这个构造函数了
+  // baseCtor指向Vue
   const baseCtor = context.$options._base
 
   // plain options object: turn it into a constructor
@@ -172,11 +175,15 @@ export function createComponent(
   }
 
   // install component management hooks onto the placeholder node
-  // 依据开源库snabbdom安装依赖钩子函数
+  // 依据开源库snabbdom安装依赖钩子函数,这边是在创建了子函数的构造函数后
+  //  该开源库的特点是在vnode的patch流程中对外暴露了各种时机的钩子函数
+  // 整个installComponentHooks的过程就是把componentVNodeHooks的钩子函数合并到
+  // data.hook中在Vnode执行patch的过程中执行相关的钩子函数
   installComponentHooks(data)
 
   // return a placeholder vnode
   const name = Ctor.options.name || tag
+  // 这边是实例化VNode
   const vnode = new VNode(
     `vue-component-${Ctor.cid}${name ? `-${name}` : ''}`,
     data,
@@ -214,6 +221,9 @@ export function createComponentInstanceForVnode(
     options.render = inlineTemplate.render
     options.staticRenderFns = inlineTemplate.staticRenderFns
   }
+  // 这里的vnode.componentOptions.Ctor 对应的就是子组件的构造函数，实地上
+  // 是继承于Vue的一个构造器Sub，相当于new Sub(options)
+  // 所以子组件的实例化实际上就是最终在这个时机执行的，并且它会执行实例的_init方法
   return new vnode.componentOptions.Ctor(options)
 }
 
