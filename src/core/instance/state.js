@@ -194,6 +194,8 @@ function initComputed(vm: Component, computed: Object) {
 
   for (const key in computed) {
     const userDef = computed[key]
+    // getter等于computed中的function本身,然后为每一个getter创建一个watcher
+    // 这是一个computed watcher
     const getter = typeof userDef === 'function' ? userDef : userDef.get
     if (process.env.NODE_ENV !== 'production' && getter == null) {
       warn(`Getter is missing for computed property "${key}".`, vm)
@@ -213,6 +215,7 @@ function initComputed(vm: Component, computed: Object) {
     // component prototype. We only need to define computed properties defined
     // at instantiation here.
     if (!(key in vm)) {
+      // 如果compute属性没有代理到该vm实例上就调用
       defineComputed(vm, key, userDef)
     } else if (process.env.NODE_ENV !== 'production') {
       if (key in vm.$data) {
@@ -223,7 +226,7 @@ function initComputed(vm: Component, computed: Object) {
     }
   }
 }
-
+// vm是实例，key是计算属性key值，userDef是用户定义到计算属性function
 export function defineComputed(
   target: any,
   key: string,
@@ -254,6 +257,7 @@ export function defineComputed(
       )
     }
   }
+  // 给vm实例上定义一个computed属性，key值是key值，属性对象是sharedPropertyDefinition，拥有get,set
   Object.defineProperty(target, key, sharedPropertyDefinition)
 }
 

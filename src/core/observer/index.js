@@ -44,7 +44,9 @@ export class Observer {
     this.value = value
     this.dep = new Dep()
     this.vmCount = 0
+    // 通过执行def函数把自身实例添加到数据对象value的_ob_ 属性上
     def(value, '__ob__', this)
+    // 如果是数组的话就从头开始重新走一边流程
     if (Array.isArray(value)) {
       if (hasProto) {
         protoAugment(value, arrayMethods)
@@ -53,6 +55,7 @@ export class Observer {
       }
       this.observeArray(value)
     } else {
+      // 如果是对象的话直接调用defineReactive
       this.walk(value)
     }
   }
@@ -63,6 +66,7 @@ export class Observer {
    * value type is Object.
    */
   walk(obj: Object) {
+    // object是value, 是options中的data属性(一般为对象)
     const keys = Object.keys(obj)
     for (let i = 0; i < keys.length; i++) {
       defineReactive(obj, keys[i])
@@ -137,6 +141,9 @@ export function observe(value: any, asRootData: ?boolean): Observer | void {
 /**
  * Define a reactive property on an Object.
  */
+// 该函数的功能就是定义一个响应式对象，给对象动态添加getter和setter
+// defineReactive函数最开始初始化Dep对象的实例，接着拿到obj的属性描述符，然后对子对象
+// 递归调用observe 方法，这样就保证了无论obj的结构有多复杂，它的所有子属性也能变成响应式对象
 export function defineReactive(
   obj: Object,
   key: string,
@@ -144,8 +151,9 @@ export function defineReactive(
   customSetter?: ?Function,
   shallow?: boolean
 ) {
+  // 实例化一个Dep的实例
   const dep = new Dep()
-
+  // getOwnPropertyDescriptor返回其属性描述符对象，configurable表示属性是否可以删除且重新赋值
   const property = Object.getOwnPropertyDescriptor(obj, key)
   if (property && property.configurable === false) {
     return
@@ -159,12 +167,16 @@ export function defineReactive(
   }
 
   let childOb = !shallow && observe(val)
+  // 这边重新定义，将Object.defineProperty
+  // 核心是利用Object.defineProperty，给数据添加getter和setter，目的是为了在我们访问数据以及
+  // 写数据的时候能自动执行一些逻辑；getter做的事情是依赖收集，setter做的事情是派发更新
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
     get: function reactiveGetter() {
       const value = getter ? getter.call(obj) : val
       if (Dep.target) {
+        // dep.depend()做依赖收集
         dep.depend()
         if (childOb) {
           childOb.dep.depend()

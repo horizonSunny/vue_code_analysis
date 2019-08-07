@@ -68,6 +68,14 @@ export default class Watcher {
     this.id = ++uid // uid for batching
     this.active = true
     this.dirty = this.lazy // for lazy watchers
+    // this.deps,this.newDeps表示watcher实例持有的dep实例的数组
+    /**
+     * vue是数据驱动的，所以每次数据变化都会重新render,那么vm.render()方法又会再次执行
+     * 并且再次触发数据都getters，所以Watcher在哦骨爪函数中会初始化2个Dep实例数组
+     * newDeps表示新添加都Dep实例数组，而deps表示上一次添加都Dep实例数组
+     * 在执行cleanupDeps函数都时候，会首先遍历deps，移除对dep.subs数组中Watcher对订阅
+     * 然后把newDepIds和depIds交换，newDeps和deps交换，并把newDepIds和newDeps清空
+     */
     this.deps = []
     this.newDeps = []
     this.depIds = new Set()
@@ -91,6 +99,7 @@ export default class Watcher {
           )
       }
     }
+    // new Watch实例的时候进入构造函数，后面执行this.get()
     this.value = this.lazy ? undefined : this.get()
   }
 
@@ -98,10 +107,19 @@ export default class Watcher {
    * Evaluate the getter, and re-collect dependencies.
    */
   get() {
+    // 进入this.get方法，首先会执行pushTarget(this)
+    // 实际上把Dep.target赋值为当前watcher，并且压栈(push进数组中，复用)
     pushTarget(this)
     let value
     const vm = this.vm
     try {
+      /**  
+       * this.getter对应就是updatecomponent函数，
+       * 实际上就是执行vm._update(vm._render(), hydrating)
+         这边执行vm._render() 方法，这个方法会生成选软vnode,并且在这个过程中会对vm上对
+         数据进行访问，这个时候就触发了数据对象的getter
+      */
+      // 依赖收集
       value = this.getter.call(vm, vm)
     } catch (e) {
       if (this.user) {
@@ -167,6 +185,7 @@ export default class Watcher {
     } else if (this.sync) {
       this.run()
     } else {
+      // 一般会走到这一步
       queueWatcher(this)
     }
   }
