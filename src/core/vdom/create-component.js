@@ -104,13 +104,14 @@ export function createComponent(
     return
   }
   // initGLobalApi Vue.options._base = Vue ,然后通过merageOptions合并到vm.$options
-  // 也就是说我们能通过vm.$options._base拿到Vue这个构造函数了
-  // baseCtor指向Vue
+  // 也就是说我们能通过vm.$options._base拿到Vue这个构造函数了，其实是父级构造函数
+  // baseCtor指向父级Vue构造函数
   const baseCtor = context.$options._base
 
   // plain options object: turn it into a constructor
   // 构造子类构造函数
   if (isObject(Ctor)) {
+    //这个其实就是Vue.extend 定义在src/core/global-api/extend.js
     Ctor = baseCtor.extend(Ctor)
   }
 

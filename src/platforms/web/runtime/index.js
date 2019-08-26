@@ -16,7 +16,7 @@ import {
 } from 'web/util/index'
 
 import { patch } from './patch'
-import platformDirectives from './directives/index'
+import platformDirectives from './dixrectives/index'
 import platformComponents from './components/index'
 
 // install platform specific utils

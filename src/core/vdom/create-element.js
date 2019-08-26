@@ -91,6 +91,7 @@ export function _createElement(
     children.length = 0
   }
   // 这边是对children的重新赋值，规范children类型，normalizationType表示子节点规范的类型
+  // 这边的意思是组件的根节点下面有很多子节点，一层层dom转换为vnode类型
   if (normalizationType === ALWAYS_NORMALIZE) {
     children = normalizeChildren(children)
   } else if (normalizationType === SIMPLE_NORMALIZE) {

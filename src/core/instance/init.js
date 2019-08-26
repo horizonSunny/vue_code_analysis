@@ -9,7 +9,7 @@ import { mark, measure } from '../util/perf'
 import { initLifecycle, callHook } from './lifecycle'
 import { initProvide, initInjections } from './inject'
 import { extend, mergeOptions, formatComponentName } from '../util/index'
-
+// 类似于闭包，在模块中定义一个uid，保存唯一的uid，不影响外层和全局
 let uid = 0
 // 这边是范性
 export function initMixin(Vue: Class<Component>) {
@@ -71,6 +71,7 @@ export function initMixin(Vue: Class<Component>) {
     }
     // 在初始化的最后，检测到如果有el属性，则调用vm.$mount方法挂在vm，挂载的目标就是把模板最终渲染成dom
     if (vm.$options.el) {
+      // 调用vm.$mount方法挂载vm，挂载的目标是把模版渲染成dom
       vm.$mount(vm.$options.el)
     }
   }

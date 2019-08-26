@@ -92,6 +92,7 @@ export function renderMixin(Vue: Class<Component>) {
 
   Vue.prototype._render = function(): VNode {
     const vm: Component = this
+    // 在入口的entry-runtime-with-compile编译处
     const { render, _parentVnode } = vm.$options
 
     if (_parentVnode) {

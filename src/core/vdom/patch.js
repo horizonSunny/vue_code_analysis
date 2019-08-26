@@ -862,6 +862,7 @@ export function createPatchFunction(backend) {
           }
           // either not server-rendered, or hydration failed.
           // create an empty node and replace it
+          //传入的oldVnode实际上是一个DOM container，通过emptyNodeAt把oldVNode转为Vnode对象
           oldVnode = emptyNodeAt(oldVnode)
         }
 

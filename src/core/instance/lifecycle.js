@@ -58,12 +58,14 @@ export function initLifecycle(vm: Component) {
 export function lifecycleMixin(Vue: Class<Component>) {
   mountComponent
   // _update是实例的一个私有方法，它被调用的时机有两个，一个是首次渲染，一个是数据更新的时候
+  // _update方法作用是把vnode渲染称真实的Dom
   Vue.prototype._update = function(vnode: VNode, hydrating?: boolean) {
     const vm: Component = this
     const prevEl = vm.$el
     // 这边取得vm._vnode,进行上一次的vnode的缓存
     const prevVnode = vm._vnode
     const restoreActiveInstance = setActiveInstance(vm)
+    // 这边是现有的vnode,用vm._vnode保存着最新的vnode，然后比较用_patch_进行更换
     vm._vnode = vnode
     // Vue.prototype.__patch__ is injected in entry points
     // based on the rendering backend used.

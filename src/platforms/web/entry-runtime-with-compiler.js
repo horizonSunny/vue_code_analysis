@@ -20,6 +20,7 @@ const idToTemplate = cached(id => {
 // 这边进行缓存，首先Vue.prototype.$mount是一个对象(函数也是对象)，所以有个指针指向该对象
 // mount 也指向该对象，后面Vue.prototype.$mount重新指向另一个对象
 const mount = Vue.prototype.$mount
+// 原来的Vue.prototype.$mount是在 runtime/index.js
 Vue.prototype.$mount = function(
   el?: string | Element,
   hydrating?: boolean
@@ -43,6 +44,7 @@ Vue.prototype.$mount = function(
   if (!options.render) {
     // 为模版重新赋值，为后面转译成render函数做准备
     let template = options.template
+    // 这一步是获取模版
     if (template) {
       if (typeof template === 'string') {
         if (template.charAt(0) === '#') {
@@ -100,6 +102,8 @@ Vue.prototype.$mount = function(
   }
   // call这个this对象，指的的是new 生成的实例
   // 这块就走回刚才缓存的 const mount = Vue.prototype.$mount
+  // 这就是复用之前的$mount
+  // call给this绑定 mount方法，并且传入mount函数的参数el,hydrating
   return mount.call(this, el, hydrating)
 }
 

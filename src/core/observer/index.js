@@ -118,6 +118,7 @@ export function observe(value: any, asRootData: ?boolean): Observer | void {
   if (!isObject(value) || value instanceof VNode) {
     return
   }
+  // 被观测者
   let ob: Observer | void
   // hasOwn表示该value对象中是否含有_ob_的属性，并且该属性是否是Observer的实例
   if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
