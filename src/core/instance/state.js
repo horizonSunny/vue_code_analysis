@@ -186,6 +186,7 @@ export function getData(data: Function, vm: Component): any {
 
 const computedWatcherOptions = { lazy: true }
 
+// 监听属性
 function initComputed(vm: Component, computed: Object) {
   // $flow-disable-line
   const watchers = (vm._computedWatchers = Object.create(null))
@@ -201,6 +202,8 @@ function initComputed(vm: Component, computed: Object) {
       warn(`Getter is missing for computed property "${key}".`, vm)
     }
 
+    // 关键点在这，for循环，上面通过for...in循环拿到computed中的每一个function方法，赋值为getter
+    // 然后为getter 加上watcher监听
     if (!isSSR) {
       // create internal watcher for the computed property.
       watchers[key] = new Watcher(
@@ -321,7 +324,7 @@ function initWatch(vm: Component, watch: Object) {
     }
   }
 }
-
+// handler就是回掉函数
 function createWatcher(
   vm: Component,
   expOrFn: string | Function,
@@ -335,6 +338,7 @@ function createWatcher(
   if (typeof handler === 'string') {
     handler = vm[handler]
   }
+  // 第一个参数是string类型 是key属性名，第二参数是这个key值
   return vm.$watch(expOrFn, handler, options)
 }
 
@@ -379,6 +383,7 @@ export function stateMixin(Vue: Class<Component>) {
     }
     options = options || {}
     options.user = true
+    // cb就是function，function里面可以配置immediate等属性
     const watcher = new Watcher(vm, expOrFn, cb, options)
     if (options.immediate) {
       try {

@@ -1,5 +1,7 @@
 /* @flow */
 
+// 观察者模式，watcher扮演的是观察者，进行观察者函数的包装处理。如render()函数等，会被
+// 包装称一个watcher实例
 import {
   warn,
   remove,
@@ -71,10 +73,8 @@ export default class Watcher {
     // this.deps,this.newDeps表示watcher实例持有的dep实例的数组
     /**
      * vue是数据驱动的，所以每次数据变化都会重新render,那么vm.render()方法又会再次执行
-     * 并且再次触发数据都getters，所以Watcher在哦骨爪函数中会初始化2个Dep实例数组
+     * 并且再次触发数据，在dep.js中的getters，所以Watcher在哦骨爪函数中会初始化2个Dep实例数组
      * newDeps表示新添加都Dep实例数组，而deps表示上一次添加都Dep实例数组
-     * 在执行cleanupDeps函数都时候，会首先遍历deps，移除对dep.subs数组中Watcher对订阅
-     * 然后把newDepIds和depIds交换，newDeps和deps交换，并把newDepIds和newDeps清空
      */
     this.deps = []
     this.newDeps = []
@@ -130,10 +130,16 @@ export default class Watcher {
     } finally {
       // "touch" every property so they are all tracked as
       // dependencies for deep watching
+      // 同步，触发子类的getter数据收集
       if (this.deep) {
         traverse(value)
       }
+      // 收集完之后，这个vm实例就恢复到上一个状态，因为当前vm的数据依赖收集已经完成
       popTarget()
+      /**
+       * 在执行cleanupDeps函数都时候，会首先遍历deps，移除对dep.subs数组中Watcher对订阅
+       * 然后把newDepIds和depIds交换，newDeps和deps交换，并把newDepIds和newDeps清空
+       */
       this.cleanupDeps()
     }
     return value
@@ -142,6 +148,7 @@ export default class Watcher {
   /**
    * Add a dependency to this directive.
    */
+  // 在watcher中调用dep,将dep 实例id放入new DepIds，然后再把this传给dep,加入sub list
   addDep(dep: Dep) {
     const id = dep.id
     if (!this.newDepIds.has(id)) {
@@ -178,6 +185,7 @@ export default class Watcher {
    * Subscriber interface.
    * Will be called when a dependency changes.
    */
+  // 这是dep实例list中等item 调用update方法
   update() {
     /* istanbul ignore else */
     if (this.lazy) {

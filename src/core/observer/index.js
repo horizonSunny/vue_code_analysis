@@ -44,7 +44,7 @@ export class Observer {
     this.value = value
     this.dep = new Dep()
     this.vmCount = 0
-    // 通过执行def函数把自身实例添加到数据对象value的_ob_ 属性上
+    // 通过执行def函数把自身实例添加到数据对象value的_ob_ ，给data添加_ob_属性，指向this=>vm实例
     def(value, '__ob__', this)
     // 如果是数组的话就从头开始重新走一边流程
     if (Array.isArray(value)) {
@@ -53,6 +53,7 @@ export class Observer {
       } else {
         copyAugment(value, arrayMethods, arrayKeys)
       }
+      // 处理value中的每一项，如果是数组，则重复调用observe
       this.observeArray(value)
     } else {
       // 如果是对象的话直接调用defineReactive
@@ -66,7 +67,7 @@ export class Observer {
    * value type is Object.
    */
   walk(obj: Object) {
-    // object是value, 是options中的data属性(一般为对象)
+    // obj是value, 是options中的data属性(一般为对象)
     const keys = Object.keys(obj)
     for (let i = 0; i < keys.length; i++) {
       defineReactive(obj, keys[i])
@@ -145,6 +146,7 @@ export function observe(value: any, asRootData: ?boolean): Observer | void {
 // 该函数的功能就是定义一个响应式对象，给对象动态添加getter和setter
 // defineReactive函数最开始初始化Dep对象的实例，接着拿到obj的属性描述符，然后对子对象
 // 递归调用observe 方法，这样就保证了无论obj的结构有多复杂，它的所有子属性也能变成响应式对象
+// obj是对象，类似与vm的data,或者props，key是对象中的属性
 export function defineReactive(
   obj: Object,
   key: string,
@@ -152,7 +154,7 @@ export function defineReactive(
   customSetter?: ?Function,
   shallow?: boolean
 ) {
-  // 实例化一个Dep的实例
+  // 实例化一个Dep的实例，每一个data内部的属性
   const dep = new Dep()
   // getOwnPropertyDescriptor返回其属性描述符对象，configurable表示属性是否可以删除且重新赋值
   const property = Object.getOwnPropertyDescriptor(obj, key)
@@ -161,6 +163,7 @@ export function defineReactive(
   }
 
   // cater for pre-defined getter/setters
+  // 这里应该都是true
   const getter = property && property.get
   const setter = property && property.set
   if ((!getter || setter) && arguments.length === 2) {
@@ -171,6 +174,7 @@ export function defineReactive(
   // 这边重新定义，将Object.defineProperty
   // 核心是利用Object.defineProperty，给数据添加getter和setter，目的是为了在我们访问数据以及
   // 写数据的时候能自动执行一些逻辑；getter做的事情是依赖收集，setter做的事情是派发更新
+  // 这边是对data中的每一个属性进行set,get的劫持
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,

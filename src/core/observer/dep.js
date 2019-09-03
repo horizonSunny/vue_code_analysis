@@ -6,18 +6,23 @@ import config from '../config'
 
 let uid = 0
 
+// dep的操作全都是与watch相关的，dep脱离watcher单独存在是没有意义的
+/**
+ * Dep.tagert静态属性就是一个watcher
+ */
 /**
  * A dep is an observable that can have multiple
  * directives subscribing to it.
  */
 export default class Dep {
-  // 静态，作为全局的收集器
+  // 静态，作为全局的唯一的收集器，dep是对watcher的一种管理，脱离watcher单独存在是无意义的
   static target: ?Watcher
   id: number
   subs: Array<Watcher>
-
+  // 所以是每一个组件中的data或者data中嵌套的子对象做响应监听，就加一
   constructor() {
     this.id = uid++
+    // 派发事件的数组，notify之后派发事件
     this.subs = []
   }
 
@@ -54,6 +59,7 @@ export default class Dep {
 // The current target watcher being evaluated.
 // This is globally unique because only one watcher
 // can be evaluated at a time.
+// Dep.target 这个是全局唯一的watcher，同一时间只有一个全局的watcher被计算，
 Dep.target = null
 const targetStack = []
 
